@@ -1057,7 +1057,7 @@ impl Connection {
                             // match the Destination Connection ID from its Initial packet.
                             return Ok(());
                         }
-                        trace!(self.log, "retrying");
+                        trace!(self.log, "retrying with CID {rem_cid}", rem_cid = rem_cid);
                         self.orig_rem_cid = Some(self.rem_cid);
                         self.rem_cid = rem_cid;
                         self.on_packet_acked(SpaceId::Initial, 0);
@@ -1132,6 +1132,11 @@ impl Connection {
                         src_cid: rem_cid, ..
                     } => {
                         if !state.rem_cid_set {
+                            trace!(
+                                self.log,
+                                "switching remote CID to {rem_cid}",
+                                rem_cid = rem_cid
+                            );
                             let mut state = state.clone();
                             self.rem_cid = rem_cid;
                             state.rem_cid_set = true;
