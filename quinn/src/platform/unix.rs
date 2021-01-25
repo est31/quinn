@@ -375,9 +375,7 @@ fn prepare_msg(
                 IpAddr::V4(v4) => {
                     let pktinfo = libc::in_pktinfo {
                         ipi_ifindex: 0,
-                        ipi_spec_dst: unsafe {
-                            *(v4 as *const Ipv4Addr as *const () as *const libc::in_addr)
-                        },
+                        ipi_spec_dst: libc::in_addr { s_addr: u32::from(v4) },
                         ipi_addr: libc::in_addr { s_addr: 0 },
                     };
                     encoder.push(libc::IPPROTO_IP, libc::IP_PKTINFO, pktinfo);
@@ -385,9 +383,7 @@ fn prepare_msg(
                 IpAddr::V6(v6) => {
                     let pktinfo = libc::in6_pktinfo {
                         ipi6_ifindex: 0,
-                        ipi6_addr: unsafe {
-                            *(v6 as *const Ipv6Addr as *const () as *const libc::in6_addr)
-                        },
+                        ipi6_addr: libc::in6_addr { s6_addr: v6.octets() },
                     };
                     encoder.push(libc::IPPROTO_IPV6, libc::IPV6_PKTINFO, pktinfo);
                 }
